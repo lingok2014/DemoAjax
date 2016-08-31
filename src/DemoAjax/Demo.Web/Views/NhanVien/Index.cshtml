@@ -1,0 +1,233 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts{
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            getEmployees();
+        })
+
+        //khai báo biến kiểm tra xem nếu như là false thì sẽ gọi hàm Insert ngược lại bằng true thì gọi làm Update
+        var isUpdatable = false;
+
+        // hàm hiển thị danh sách những record
+        function getEmployees() {
+            $.ajax({
+                url: '/NhanVien/GetEmployee/',
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    var rows = '';
+                    $.each(data, function (i, item)
+                    {
+                        rows += "<tr>"
+                        rows += "<td>" + item.Id + "</td>"
+                        rows += "<td>" + item.TenNhanVien + "</td>"
+                        rows += "<td>" + item.DiaChi + "</td>"
+                        rows += "<td>" + item.SoDienThoai + "</td>"
+                        rows += "<td>" + item.Email + "</td>"
+                        rows += "<td>" + item.Tuoi + "</td>"
+                        rows += "<td><button type='button' id='btnEdit' class='btn btn-default' onclick='return getDetailEmployee(" + item.Id + ")'>Edit</button> <button type='button' id='btnDelete' class='btn btn-danger' onclick='return deleteNhanVien(" + item.Id + ")'>Delete</button></td>"
+                        rows += "</tr>";
+                        $("#listEmployee tbody").html(rows);
+                    });
+                },
+                error: function (err) {
+                    alert("Error: " + err.responseText);
+                }
+            });
+        }
+
+        // hàm lấy chi tiết một record dựa trên id
+        function getDetailEmployee(Id) {
+            $("#title").text("Details");
+            $.ajax({
+                url: '/NhanVien/GetId/' + Id,
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    $("#Id").val(data.Id);
+                    $("#TenNhanVien").val(data.TenNhanVien);
+                    $("#DiaChi").val(data.DiaChi);
+                    $("#SoDienThoai").val(data.SoDienThoai);
+                    $("#Email").val(data.Email);
+                    $("#Tuoi").val(data.Tuoi);
+                    isUpdatable = true;
+                    $("#EmployeeModal").modal('show');
+                },
+                error: function (err) {
+                    alert("Error: " + err.responseText);
+                }
+            })
+        }
+
+        // hàm Insert và Update một record
+        $("#btnSave").click(function (e) {
+
+            var data = {
+                ID: $("#Id").val(),
+                TenNhanVien: $("#TenNhanVien").val(),
+                DiaChi: $("#DiaChi").val(),
+                SoDienThoai: $("#SoDienThoai").val(),
+                Email: $("#Email").val(),
+                Tuoi: $("#Tuoi").val()
+            }
+
+            if (!isUpdatable) {
+                $.ajax({
+                    url: '/NhanVien/Create',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: data,
+                    success: function (data) {
+                        getEmployees();
+                        $("#EmployeeModal").modal('hide');
+                        clear();
+                    },
+                    error: function (err) {
+                        alert("Error: " + err.responseText);
+                    }
+                })
+            }
+            else {
+                $.ajax({
+                    url: '/NhanVien/Update',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: data,
+                    success: function (data) {
+                        getEmployees();
+                        isUpdatable = false;
+                        $("#EmployeeModal").modal('hide');
+                        clear();
+                    },
+                    error: function (err) {
+                        alert("Error: " + err.responseText);
+                    }
+                })
+            }
+        });
+
+        // ham delete NhanVien
+        function deleteNhanVien(id) {
+            var confirmDelete = bootbox.confirm("Bạn có thực sự muốn xóa?", function (result) {
+                if (result == true) {
+                    $.ajax({
+                        url: "/NhanVien/Delete/" + id,
+                        type: "POST",
+                        dataType: 'json',
+                        success: function (data) {
+                            getEmployees();
+                         
+
+                        },
+                        error: function (err) {
+                            alert("Error: " + err.responseText);
+                        }
+                    });
+                }
+
+            });
+
+        }
+
+        $("#btnCreateNew").click(function () {
+            $("#title").text("Create New");
+        })
+
+        // hàm đóng modal
+        $("#btnClose").click(function () {
+            clear();
+        });
+
+        // hàm reset giá trị về rỗng sau khi thực hiện Insert hoặc Update
+        function clear() {
+            $("#Id").val("");
+            $("#TenNhanVien").val("");
+            $("#DiaChi").val("");
+            $("#SoDienThoai").val("");
+            $("#Email").val("");
+            $("#Tuoi").val("");
+        }
+
+    </script>
+
+}
+<br />
+<p>
+    <button type="button" id="btnCreateNew" class="btn btn-primary" data-toggle="modal" data-target="#EmployeeModal">
+        Tạo Mới
+    </button>
+</p>
+@*table dùng để hiển thị danh sách*@
+<table id="listEmployee" class="table table-condensed">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Tên Nhân Viên</th>
+            <th>Địa chỉ</th>
+            <th> Số điện thoại</th>
+            <th>Email</th>
+            <th>Tuổi</th>
+        </tr>
+    </thead>
+    <tbody>
+        
+    </tbody>
+    
+</table>
+
+@*modal dùng để hiển thị form Create và Update*@
+<div class="modal fade" id="EmployeeModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title"><label id="title"></label></h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <div class="col-md-10">
+                            <input type="hidden" class="form-control" id="Id" />
+                            <label>Tên Nhân Viên</label>
+                            <input type="text" id="TenNhanVien" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-10">
+                            <label>Địa Chỉ</label>
+                            <input type="text" id="DiaChi" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-10">
+                            <label>Số điện Thoại</label>
+                            <input type="text" id="SoDienThoai" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-10">
+                            <label>Email</label>
+                            <input type="text" id="Email" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-10">
+                            <label>Tuổi</label>
+                            <input type="number" id="Tuoi" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btnClose" class="btn btn-default" data-dismiss="modal">Đóng</button>
+                <button type="button" id="btnSave" class="btn btn-primary">Lưu</button>
+            </div>
+        </div>
+    </div>
+</div>
