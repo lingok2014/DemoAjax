@@ -35,6 +35,9 @@ namespace Demo.Web.Controllers
             return Json(result, JsonRequestBehavior.AllowGet);
 
         }
+        //Bind Exclude = "Id" ở đây có nghĩa là khi ta thêm mới một record
+        /// thì mặc định phương thức Create sẽ bỏ qua giá trị của Id vì ở đây Id chúng ta
+        /// đã thiết lập tự động tăng
         [HttpPost]
         public ActionResult Create([Bind(Exclude = "Id")] NhanVien nhanvien)
         {
@@ -52,25 +55,14 @@ namespace Demo.Web.Controllers
             {
                 db.Entry(nhanvien).State = System.Data.Entity.EntityState.Modified;
                 db.SaveChanges();
-                //NhanVien spUpdate = db.NhanVien.Find(nhanvien.ID);
-                //if (spUpdate != null)
-                //{
-                //    spUpdate.TenNhanVien = nhanvien.TenNhanVien;
-                //    spUpdate.SoDienThoai = nhanvien.SoDienThoai;
-                //    spUpdate.DiaChi = nhanvien.DiaChi;
-                //    spUpdate.Email = nhanvien.Email;
-                //    spUpdate.Tuoi = nhanvien.Tuoi;
-
-                //    db.SaveChanges();
-
-                //}
+        
             }
             return Json(nhanvien, JsonRequestBehavior.AllowGet);
 
 
         }
         [HttpPost]
-        public ActionResult Delete(int  id)
+        public ActionResult Delete(int?  id)
         {
             var nhanvien = db.NhanVien.ToList().Find(m => m.Id == id);
             if (nhanvien != null)

@@ -8,20 +8,22 @@
 
     <script type="text/javascript">
 
-        $(document).ready(function () {
-            getEmployees();
+        $(document).ready(function ()
+        {
+            getNhanVien();
         })
 
         //khai báo biến kiểm tra xem nếu như là false thì sẽ gọi hàm Insert ngược lại bằng true thì gọi làm Update
         var isUpdatable = false;
 
         // hàm hiển thị danh sách những record
-        function getEmployees() {
+        function getNhanVien() {
             $.ajax({
                 url: '/NhanVien/GetEmployee/',
                 type: 'GET',
                 dataType: 'json',
-                success: function (data) {
+                success: function (data)
+                {
                     var rows = '';
                     $.each(data, function (i, item)
                     {
@@ -32,21 +34,24 @@
                         rows += "<td>" + item.SoDienThoai + "</td>"
                         rows += "<td>" + item.Email + "</td>"
                         rows += "<td>" + item.Tuoi + "</td>"
-                        rows += "<td><button type='button' id='btnEdit' class='btn btn-default' onclick='return getDetailEmployee(" + item.Id + ")'>Edit</button> <button type='button' id='btnDelete' class='btn btn-danger' onclick='return deleteNhanVien(" + item.Id + ")'>Delete</button></td>"
+                        rows += "<td><button type='button' id='btnEdit' class='btn btn-info' onclick='return getDetailEmployee(" + item.Id + ")'>Cập Nhật</button> <button type='button' id='btnDelete' class='btn btn-danger' onclick='return deleteNhanVien(" + item.Id + ")'>Xóa</button></td>"
                         rows += "</tr>";
                         $("#listEmployee tbody").html(rows);
                     });
                 },
-                error: function (err) {
+                error: function (err)
+                {
                     alert("Error: " + err.responseText);
                 }
             });
         }
 
         // hàm lấy chi tiết một record dựa trên id
-        function getDetailEmployee(Id) {
+        function getDetailEmployee(Id)
+        {
             $("#title").text("Details");
-            $.ajax({
+            $.ajax(
+                {
                 url: '/NhanVien/GetId/' + Id,
                 type: 'GET',
                 dataType: 'json',
@@ -60,16 +65,19 @@
                     isUpdatable = true;
                     $("#EmployeeModal").modal('show');
                 },
-                error: function (err) {
-                    alert("Error: " + err.responseText);
+                error: function (erro)
+                {
+                    alert("Error: " + erro.responseText);
                 }
             })
         }
 
         // hàm Insert và Update một record
-        $("#btnSave").click(function (e) {
+        $("#btnSave").click(function (e)
+        {
 
-            var data = {
+            var data =
+            {
                 ID: $("#Id").val(),
                 TenNhanVien: $("#TenNhanVien").val(),
                 DiaChi: $("#DiaChi").val(),
@@ -78,18 +86,21 @@
                 Tuoi: $("#Tuoi").val()
             }
 
-            if (!isUpdatable) {
+            if (!isUpdatable)
+            {
                 $.ajax({
                     url: '/NhanVien/Create',
                     type: 'POST',
                     dataType: 'json',
                     data: data,
-                    success: function (data) {
-                        getEmployees();
+                    success: function (data)
+                    {
+                        getNhanVien();
                         $("#EmployeeModal").modal('hide');
                         clear();
                     },
-                    error: function (err) {
+                    error: function (err)
+                    {
                         alert("Error: " + err.responseText);
                     }
                 })
@@ -100,13 +111,15 @@
                     type: 'POST',
                     dataType: 'json',
                     data: data,
-                    success: function (data) {
-                        getEmployees();
+                    success: function (data)
+                    {
+                        getNhanVien();
                         isUpdatable = false;
                         $("#EmployeeModal").modal('hide');
                         clear();
                     },
-                    error: function (err) {
+                    error: function (err)
+                    {
                         alert("Error: " + err.responseText);
                     }
                 })
@@ -114,19 +127,24 @@
         });
 
         // ham delete NhanVien
-        function deleteNhanVien(id) {
-            var confirmDelete = bootbox.confirm("Bạn có thực sự muốn xóa?", function (result) {
-                if (result == true) {
+        function deleteNhanVien(id)
+        {
+            var confirmDelete = bootbox.confirm("Bạn có thực sự muốn xóa?", function (result)
+            {
+                if (result == true)
+                {
                     $.ajax({
                         url: "/NhanVien/Delete/" + id,
                         type: "POST",
                         dataType: 'json',
-                        success: function (data) {
-                            getEmployees();
+                        success: function (data)
+                        {
+                            getNhanVien();
                          
 
                         },
-                        error: function (err) {
+                        error: function (err)
+                        {
                             alert("Error: " + err.responseText);
                         }
                     });
@@ -136,17 +154,20 @@
 
         }
 
-        $("#btnCreateNew").click(function () {
-            $("#title").text("Create New");
+        $("#btnCreateNew").click(function ()
+        {
+            $("#title").text("Tạo Mới");
         })
 
         // hàm đóng modal
-        $("#btnClose").click(function () {
+        $("#btnClose").click(function ()
+        {
             clear();
         });
 
         // hàm reset giá trị về rỗng sau khi thực hiện Insert hoặc Update
-        function clear() {
+        function clear()
+        {
             $("#Id").val("");
             $("#TenNhanVien").val("");
             $("#DiaChi").val("");
