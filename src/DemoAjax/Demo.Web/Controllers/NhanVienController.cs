@@ -23,21 +23,35 @@ namespace Demo.Web.Controllers
         {
             return View();
         }
+        /// <summary>
+        /// Hàm trả về danh sách nhân viên
+        /// </summary>
+        /// <returns>List nhân viên</returns>
         [HttpGet]
         public ActionResult GetEmployee()
         {
             var result = db.NhanVien.ToList();
             return Json(result, JsonRequestBehavior.AllowGet);
         }
+        /// <summary>
+        /// lấy nhân viên theo mã
+        /// </summary>
+        /// <param name="id">Id</param>
+        /// <returns>1 dòng dữ liệu</returns>
         public ActionResult GetId(int? id)
         {
             var result = db.NhanVien.ToList().Find(x => x.Id == id);
             return Json(result, JsonRequestBehavior.AllowGet);
 
         }
-        //Bind Exclude = "Id" ở đây có nghĩa là khi ta thêm mới một record
-        /// thì mặc định phương thức Create sẽ bỏ qua giá trị của Id vì ở đây Id chúng ta
+        /// <summary>
+        /// tạo mới một nhân viên.
+        /// Bind Exclude = "Id" ở đây có nghĩa là khi ta thêm mới một record
+        /// thì mặc định phương thức Create sẽ bỏ qua giá trị của Id vì ở đây Id 
         /// đã thiết lập tự động tăng
+        /// </summary>
+        /// <param name="nhanvien"></param>
+        /// <returns></returns>
         [HttpPost]
         public ActionResult Create([Bind(Exclude = "Id")] NhanVien nhanvien)
         {
@@ -48,6 +62,11 @@ namespace Demo.Web.Controllers
             }
             return Json(nhanvien, JsonRequestBehavior.AllowGet);
         }
+        /// <summary>
+        /// chỉnh sữa nhân viên
+        /// </summary>
+        /// <param name="nhanvien">nhanvien</param>
+        /// <returns>1 nhân viên</returns>
         [HttpPost]
         public ActionResult Update(NhanVien nhanvien)
         {
@@ -61,6 +80,11 @@ namespace Demo.Web.Controllers
 
 
         }
+        /// <summary>
+        /// hàm xóa nhân viên
+        /// </summary>
+        /// <param name="id">ID</param>
+        /// <returns> 1 dòng</returns>
         [HttpPost]
         public ActionResult Delete(int?  id)
         {
